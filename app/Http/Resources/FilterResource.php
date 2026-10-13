@@ -21,6 +21,7 @@ class FilterResource extends JsonResource
             'published_at' => $this->published_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'creator' => $this->whenLoaded('user', fn () => $this->user->only(['id', 'name'])),
             'category' => $this->whenLoaded('category', fn () => $this->category->only(['id', 'name', 'slug'])),
             'tags' => $this->whenLoaded('tags', fn () => $this->tags->map->only(['id', 'name', 'slug'])),
             'layers' => FilterLayerResource::collection($this->whenLoaded('layers')),
