@@ -19,6 +19,7 @@ class FilterResource extends JsonResource
             'description' => $this->description,
             'status' => $this->status,
             'published_at' => $this->published_at,
+            'likes_count' => $this->whenCounted('likes'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'creator' => $this->whenLoaded('user', fn () => $this->user->only(['id', 'name'])),

@@ -50,6 +50,7 @@ class GalleryController extends Controller
         return Filter::query()
             ->where('status', 'published')
             ->whereNotNull('published_at')
+            ->withCount('likes')
             ->with(['user:id,name', 'category', 'tags', 'layers.asset']);
     }
 }

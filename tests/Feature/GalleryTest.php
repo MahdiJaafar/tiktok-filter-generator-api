@@ -278,17 +278,18 @@ class GalleryTest extends TestCase
 
     public function test_gallery_eager_loads_relationships_without_more_queries_per_filter(): void
     {
-        $this->createFilterWithRelationships();
+        $this->createFilterWithRelationships()->likes()->create(['user_id' => $this->creator->id]);
         DB::enableQueryLog();
 
         try {
             $this->getJson('/api/gallery')->assertOk()
                 ->assertJsonPath('data.0.creator.id', $this->creator->id)
+                ->assertJsonPath('data.0.likes_count', 1)
                 ->assertJsonPath('data.0.layers.0.asset.type', 'sticker');
             $singleFilterQueryCount = count(DB::getQueryLog());
 
             for ($i = 0; $i < 4; $i++) {
-                $this->createFilterWithRelationships();
+                $this->createFilterWithRelationships()->likes()->create(['user_id' => $this->creator->id]);
             }
 
             DB::flushQueryLog();
@@ -297,6 +298,7 @@ class GalleryTest extends TestCase
 
             foreach ($response->json('data') as $filter) {
                 $this->assertSame($this->creator->id, $filter['creator']['id']);
+                $this->assertSame(1, $filter['likes_count']);
                 $this->assertSame($this->category->id, $filter['category']['id']);
                 $this->assertSame($this->tag->id, $filter['tags'][0]['id']);
                 $this->assertSame('sticker', $filter['layers'][0]['asset']['type']);

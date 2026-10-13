@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FilterController;
 use App\Http\Controllers\Api\GalleryController;
+use App\Http\Controllers\Api\LikeController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -20,4 +21,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('filters', FilterController::class);
     Route::post('/filters/{filter}/publish', [FilterController::class, 'publish']);
+    Route::post('/filters/{filter}/like', [LikeController::class, 'store']);
+    Route::delete('/filters/{filter}/like', [LikeController::class, 'destroy']);
 });
