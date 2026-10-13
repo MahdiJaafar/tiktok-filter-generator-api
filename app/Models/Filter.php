@@ -40,7 +40,7 @@ class Filter extends Model
 
     public function layers(): HasMany
     {
-        return $this->hasMany(FilterLayer::class);
+        return $this->hasMany(FilterLayer::class)->orderBy('layer_order')->orderBy('id');
     }
 
     public function tags(): BelongsToMany
