@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CollectionController;
 use App\Http\Controllers\Api\FilterController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\LikeController;
@@ -18,6 +19,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::post('/assets', [AssetController::class, 'store']);
+
+    Route::apiResource('collections', CollectionController::class);
+    Route::post('/collections/{collection}/filters/{filter}', [CollectionController::class, 'addFilter']);
+    Route::delete('/collections/{collection}/filters/{filter}', [CollectionController::class, 'removeFilter']);
 
     Route::apiResource('filters', FilterController::class);
     Route::post('/filters/{filter}/publish', [FilterController::class, 'publish']);
