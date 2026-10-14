@@ -18,11 +18,11 @@ class StoreFilterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'description' => ['sometimes', 'nullable', 'string'],
+            'description' => ['sometimes', 'nullable', 'string', 'max:10000'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
-            'tags' => ['sometimes', 'array', 'list'],
+            'tags' => ['sometimes', 'array', 'list', 'max:50'],
             'tags.*' => ['required', 'integer', 'distinct', 'exists:tags,id'],
-            'layers' => ['sometimes', 'array', 'list'],
+            'layers' => ['sometimes', 'array', 'list', 'max:100'],
             'layers.*' => ['required', 'array:type,asset_id,layer_order,properties'],
             'layers.*.type' => ['required', Rule::in(['adjustment', 'sticker', 'overlay', 'text'])],
             'layers.*.asset_id' => [

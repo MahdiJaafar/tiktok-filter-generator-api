@@ -42,6 +42,8 @@ class CollectionController extends Controller
 
         $collection->loadCount('filters')->load([
             'filters' => fn (BelongsToMany $filters) => $filters
+                ->where('status', 'published')
+                ->whereNotNull('published_at')
                 ->with(['user:id,name', 'category', 'tags', 'layers.asset'])
                 ->withCount('likes')
                 ->orderByPivot('created_at', 'desc')

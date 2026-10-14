@@ -16,7 +16,10 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         return DB::transaction(function () use ($request): JsonResponse {
-            $user = User::create($request->validated());
+            $user = User::create([
+                ...$request->safe()->only(['name', 'email']),
+                'password' => Hash::make($request->validated('password')),
+            ]);
             $token = $user->createToken('api-token')->plainTextToken;
 
             return response()->json([

@@ -17,7 +17,7 @@ class StoreCollectionRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'description' => ['sometimes', 'nullable', 'string'],
+            'description' => ['sometimes', 'nullable', 'string', 'max:10000'],
             'user_id' => ['prohibited'],
         ];
     }

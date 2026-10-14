@@ -9,8 +9,8 @@ use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\RemixController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 
 Route::get('/gallery', [GalleryController::class, 'index']);
 Route::get('/gallery/{filter}', [GalleryController::class, 'show'])->whereNumber('filter');
@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::post('/assets', [AssetController::class, 'store']);
+    Route::post('/assets', [AssetController::class, 'store'])->middleware('throttle:asset-uploads');
 
     Route::apiResource('collections', CollectionController::class);
     Route::post('/collections/{collection}/filters/{filter}', [CollectionController::class, 'addFilter']);

@@ -121,6 +121,7 @@ class CollectionTest extends TestCase
             'nonstring name' => [['name' => ['invalid']], 'name'],
             'long name' => [['name' => str_repeat('a', 256)], 'name'],
             'nonstring description' => [['description' => ['invalid']], 'description'],
+            'long description' => [['description' => str_repeat('x', 10001)], 'description'],
         ];
     }
 

@@ -152,6 +152,9 @@ class AuthTest extends TestCase
             'missing credentials' => [[], ['email', 'password']],
             'invalid email' => [['email' => 'invalid-email', 'password' => 'secure-password'], ['email']],
             'invalid password type' => [['email' => 'user@example.com', 'password' => ['invalid']], ['password']],
+            'email too long' => [['email' => str_repeat('a', 256).'@example.com', 'password' => 'secure-password'], ['email']],
+            'password too long' => [['email' => 'user@example.com', 'password' => str_repeat('a', 4097)], ['password']],
+            'password null byte' => [['email' => 'user@example.com', 'password' => "password\0suffix"], ['password']],
         ];
     }
 
