@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CollectionController;
 use App\Http\Controllers\Api\FilterController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\RecommendationController;
 use App\Http\Controllers\Api\RemixController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,7 @@ Route::get('/gallery/{filter}', [GalleryController::class, 'show'])->whereNumber
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/recommendations', [RecommendationController::class, 'index'])->middleware('throttle:recommendations');
 
     Route::post('/assets', [AssetController::class, 'store'])->middleware('throttle:asset-uploads');
 

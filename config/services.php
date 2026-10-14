@@ -2,6 +2,14 @@
 
 return [
 
+    'llm' => [
+        'provider' => env('LLM_PROVIDER', 'anthropic'),
+        'api_key' => env('LLM_API_KEY'),
+        'model' => env('LLM_MODEL'),
+        // Optional API root including /v1. Blank uses the chosen provider's official API.
+        'base_url' => env('LLM_BASE_URL'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
