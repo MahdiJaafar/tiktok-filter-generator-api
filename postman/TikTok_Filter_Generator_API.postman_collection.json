@@ -2,7 +2,7 @@
   "info": {
     "name": "TikTok Filter Generator API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Documentation for the implemented Laravel API only. 25 requests cover all 23 route entries, with separate PUT and PATCH examples. Import the accompanying environment and follow postman/README.md. Bearer auth is inherited by protected requests; authentication entry points and the gallery explicitly disable auth. Saved examples use synthetic IDs, timestamps and placeholder tokens, not live data. Fill email/password locally, select existing category/tag IDs, and choose an upload file. Requests are intended for manual exploration: delete/logout operations are destructive and folder order is not an end-to-end runner workflow. Responses vary with data and ownership; each saved example is an independent scenario."
+    "description": "Documentation for the implemented Laravel API only. 26 requests cover all 24 route entries, with separate PUT and PATCH examples. Import the accompanying environment and follow postman/README.md. Bearer auth is inherited by protected requests; authentication entry points and the gallery explicitly disable auth. Saved examples use synthetic IDs, timestamps and placeholder tokens, not live data. Fill email/password locally, select existing category/tag IDs, and choose an upload file. Requests are intended for manual exploration: delete/logout operations are destructive and folder order is not an end-to-end runner workflow. Responses vary with data and ownership; each saved example is an independent scenario."
   },
   "auth": {
     "type": "bearer",
@@ -4892,6 +4892,224 @@
                   "}"
                 ]
               }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AI Recommendations",
+      "description": "Authenticated published-filter recommendations based on likes, saved collections, categories and tags. AI ranking is optional; deterministic fallback works without a provider key. Rate limit: 10 requests/minute per user.",
+      "item": [
+        {
+          "name": "Get recommendations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/recommendations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "recommendations"
+              ]
+            },
+            "description": "Requires a Sanctum Bearer token ({{token}}). No request body or query parameters. Limited to 10 requests per minute per authenticated user.\n\nReturns up to five published filters (status=published and published_at is not null), based on the user's likes, filters saved in collections, and their categories and tags. Unseen filters from other creators take priority; previously liked/saved or owned filters fill shortages. Drafts are never returned.\n\nAI ranks candidates when a provider key/model is configured on the server and the user has published preference history. Missing configuration, provider errors/timeouts, or unusable output use deterministic fallback: category matches, shared-tag count, likes count, then publication recency and ID. New users receive popularity/recency fallback without an LLM call. No LLM key is needed to test fallback; never add provider keys to Postman.\n\nResponse: data is an array of FilterResource objects with creator id/name, category, tags, layers, safe asset metadata and likes_count. meta.source is ai when a valid AI choice is returned (other slots may use fallback), otherwise fallback. Results are not paginated; an empty eligible catalog returns data: []. Saved examples are independent synthetic scenarios.\n\n401: missing or invalid token. 429: rate limit exceeded; respect Retry-After (seconds).",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 AI recommendations",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/recommendations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "recommendations"
+                  ]
+                },
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"user_id\": 1,\n      \"category_id\": 1,\n      \"parent_filter_id\": null,\n      \"name\": \"Retro Summer\",\n      \"description\": \"Warm summer colors with a sun sticker.\",\n      \"status\": \"published\",\n      \"published_at\": \"2026-10-14T12:00:00.000000Z\",\n      \"created_at\": \"2026-10-14T12:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T12:00:00.000000Z\",\n      \"category\": {\n        \"id\": 1,\n        \"name\": \"Retro\",\n        \"slug\": \"retro\"\n      },\n      \"tags\": [\n        {\n          \"id\": 1,\n          \"name\": \"Summer\",\n          \"slug\": \"summer\"\n        }\n      ],\n      \"layers\": [\n        {\n          \"id\": 1,\n          \"type\": \"adjustment\",\n          \"asset_id\": null,\n          \"layer_order\": 0,\n          \"properties\": {\n            \"brightness\": 10,\n            \"contrast\": 15\n          },\n          \"asset\": null\n        },\n        {\n          \"id\": 2,\n          \"type\": \"sticker\",\n          \"asset_id\": 1,\n          \"layer_order\": 1,\n          \"properties\": {\n            \"x\": 100,\n            \"y\": 120,\n            \"scale\": 0.8\n          },\n          \"asset\": {\n            \"id\": 1,\n            \"type\": \"sticker\",\n            \"original_name\": \"sun.png\",\n            \"mime_type\": \"image/png\",\n            \"file_size\": 2048,\n            \"width\": 300,\n            \"height\": 200\n          }\n        },\n        {\n          \"id\": 3,\n          \"type\": \"overlay\",\n          \"asset_id\": null,\n          \"layer_order\": 2,\n          \"properties\": {\n            \"color\": \"#FFD699\",\n            \"opacity\": 0.2\n          },\n          \"asset\": null\n        },\n        {\n          \"id\": 4,\n          \"type\": \"text\",\n          \"asset_id\": null,\n          \"layer_order\": 3,\n          \"properties\": {\n            \"text\": \"SUMMER\",\n            \"x\": 50,\n            \"y\": 50\n          },\n          \"asset\": null\n        }\n      ],\n      \"likes_count\": 1,\n      \"creator\": {\n        \"id\": 1,\n        \"name\": \"Demo Creator\"\n      }\n    }\n  ],\n  \"meta\": {\n    \"source\": \"ai\"\n  }\n}"
+            },
+            {
+              "name": "200 Fallback recommendations",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/recommendations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "recommendations"
+                  ]
+                },
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"user_id\": 1,\n      \"category_id\": 1,\n      \"parent_filter_id\": null,\n      \"name\": \"Retro Summer\",\n      \"description\": \"Warm summer colors with a sun sticker.\",\n      \"status\": \"published\",\n      \"published_at\": \"2026-10-14T12:00:00.000000Z\",\n      \"created_at\": \"2026-10-14T12:00:00.000000Z\",\n      \"updated_at\": \"2026-10-14T12:00:00.000000Z\",\n      \"category\": {\n        \"id\": 1,\n        \"name\": \"Retro\",\n        \"slug\": \"retro\"\n      },\n      \"tags\": [\n        {\n          \"id\": 1,\n          \"name\": \"Summer\",\n          \"slug\": \"summer\"\n        }\n      ],\n      \"layers\": [\n        {\n          \"id\": 1,\n          \"type\": \"adjustment\",\n          \"asset_id\": null,\n          \"layer_order\": 0,\n          \"properties\": {\n            \"brightness\": 10,\n            \"contrast\": 15\n          },\n          \"asset\": null\n        },\n        {\n          \"id\": 2,\n          \"type\": \"sticker\",\n          \"asset_id\": 1,\n          \"layer_order\": 1,\n          \"properties\": {\n            \"x\": 100,\n            \"y\": 120,\n            \"scale\": 0.8\n          },\n          \"asset\": {\n            \"id\": 1,\n            \"type\": \"sticker\",\n            \"original_name\": \"sun.png\",\n            \"mime_type\": \"image/png\",\n            \"file_size\": 2048,\n            \"width\": 300,\n            \"height\": 200\n          }\n        },\n        {\n          \"id\": 3,\n          \"type\": \"overlay\",\n          \"asset_id\": null,\n          \"layer_order\": 2,\n          \"properties\": {\n            \"color\": \"#FFD699\",\n            \"opacity\": 0.2\n          },\n          \"asset\": null\n        },\n        {\n          \"id\": 4,\n          \"type\": \"text\",\n          \"asset_id\": null,\n          \"layer_order\": 3,\n          \"properties\": {\n            \"text\": \"SUMMER\",\n            \"x\": 50,\n            \"y\": 50\n          },\n          \"asset\": null\n        }\n      ],\n      \"likes_count\": 1,\n      \"creator\": {\n        \"id\": 1,\n        \"name\": \"Demo Creator\"\n      }\n    }\n  ],\n  \"meta\": {\n    \"source\": \"fallback\"\n  }\n}"
+            },
+            {
+              "name": "401 Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/recommendations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "recommendations"
+                  ]
+                },
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Unauthorized\"\n}"
+            },
+            {
+              "name": "429 Too Many Requests",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/recommendations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "recommendations"
+                  ]
+                },
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Retry-After",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "10"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "0"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Too Many Requests\"\n}"
             }
           ]
         }
