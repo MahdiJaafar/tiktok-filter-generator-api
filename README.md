@@ -39,10 +39,20 @@ Implemented features:
 
 Before running the project, make sure the following are installed:
 
-- PHP 8.4 (used for development and CI)
+- PHP 8.4.1 or later compatible with `composer.lock` (PHP 8.4 is used in CI).
+  Although `composer.json` allows PHP 8.3, the locked Symfony dependencies require
+  at least PHP 8.4.1.
 - Composer
 - MySQL
 - Git
+
+Enable `pdo_mysql` for the application and `pdo_sqlite` / `sqlite3` for tests.
+Image upload tests require GD with PNG, JPEG and WEBP support. Relevant Laravel,
+Composer and PHPUnit extensions include `ctype`, `dom`, `fileinfo`, `filter`,
+`hash`, `iconv`, `json`, `libxml`, `mbstring`, `openssl`, `pcre`, `Phar`, `session`,
+`tokenizer`, `xml` and `xmlwriter`; many ship with PHP. Enable `curl` for HTTP calls
+and `zip` for convenient Composer downloads. Check the installed environment with
+`composer check-platform-reqs` after installing dependencies.
 
 ## Installation
 
@@ -54,17 +64,98 @@ cd tiktok-filter-generator-api
 composer install
 ```
 
-For a new checkout, copy `.env.example` to `.env`, configure your local database,
-and generate the application key. Then run the migrations and start the API:
+For a fresh checkout, copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+In Windows PowerShell, use `Copy-Item .env.example .env` instead. Keep an existing
+`.env` when updating an installation. Generate the application key:
 
 ```bash
 php artisan key:generate
+```
+
+### MySQL configuration
+
+Create the database in MySQL before running migrations, using your MySQL client
+or database administration tool:
+
+```sql
+CREATE DATABASE tiktok_filter_generator_api
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Configure the connection in your local `.env`. These are illustrative values;
+use your own local database credentials:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=tiktok_filter_generator_api
+DB_USERNAME=root
+DB_PASSWORD=your_password
+```
+
+### Database setup
+
+```bash
 php artisan migrate
+php artisan db:seed
+```
+
+Seeding creates starter categories (Vintage, Cinematic, Beauty, Funny, Gaming,
+Retro, Artistic) and tags (summer, warm, retro, film, neon, dark, funny, cinematic,
+vintage, colorful). An existing category is required to create a filter; tags
+are optional. The seeders reuse existing slugs, preserve existing records, and
+can be run repeatedly without creating duplicates. They do not create users;
+register a user through the API.
+
+To find the IDs for your Postman requests, run `php artisan tinker` and inspect:
+
+```php
+App\Models\Category::all(['id', 'name', 'slug']);
+App\Models\Tag::all(['id', 'name', 'slug']);
+```
+
+Use the returned IDs rather than assuming a starter entry always has ID `1`.
+
+### Run the application
+
+```bash
 php artisan serve
 ```
 
+The API is available at `http://127.0.0.1:8000/api`. For uploads up to the API's
+5 MiB limit, configure PHP's `upload_max_filesize` to at least `5M` and
+`post_max_size` above that size to allow multipart overhead (for example `8M`).
+
 See the [Postman guide](postman/README.md) for authentication, request examples,
 and local environment setup.
+
+## Tests and code style
+
+```bash
+php artisan test
+```
+
+`phpunit.xml` configures an in-memory SQLite database, array-backed cache/sessions,
+and isolated test data. Tests use SQLite instead of your developer MySQL database.
+Upload tests use fake storage, and recommendation provider calls are mocked, so
+no LLM key is required. If configuration was previously cached, run
+`php artisan config:clear` before testing so the test settings take effect.
+
+Optional read-only style check:
+
+```bash
+vendor/bin/pint --test
+```
+
+In PowerShell, use `php vendor/bin/pint --test`.
+
+Never commit `.env`, real passwords, API keys, or exported Postman tokens.
 
 ## AI Recommendations
 

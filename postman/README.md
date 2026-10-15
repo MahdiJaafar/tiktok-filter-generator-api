@@ -13,11 +13,12 @@ local environment. The collection uses the [Postman Collection v2.1 format](http
 4. Send **Authentication → Register** or **Login**. Successful responses save
    `token` in collection variables; protected requests inherit Bearer auth.
 5. Set collection variables `category_id` and `tag_id` to existing database IDs.
-   Their default `1` values are illustrative. There are no category/tag listing
-   or management endpoints. IDs can come from existing gallery responses or
-   your local database. A category is required to create a filter; tags can be
-   omitted or set to `[]`. An empty database needs a category provisioned outside
-   this collection.
+   Their default `1` values are illustrative. Run `php artisan db:seed` after
+   migrations to provision starter categories/tags; repeating it is safe.
+   There are no category/tag listing or management endpoints. Obtain IDs from
+   existing gallery responses or the read-only Tinker commands in the root
+   [database setup guide](../README.md#database-setup). A category is required
+   to create a filter; tags can be omitted or set to `[]`.
 6. Optionally send **Assets → Upload asset** after choosing a file in the Body
    tab. It saves `asset_id`. Leave the multipart Content-Type header to Postman.
    PNG/JPG/JPEG/WEBP only, up to 5120 KiB, 1–4096 pixels per axis. Storage is private;
